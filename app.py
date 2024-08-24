@@ -9,11 +9,11 @@ from langchain.chains import LLMChain
 # Load environment variables
 load_dotenv()
 
-def get_reddit_posts(keyword, subreddit, limit):
+def get_reddit_posts(keyword, limit):
     # Reddit app credentials
-    client_id = os.getenv('REDDIT_CLIENT_ID')
-    client_secret = os.getenv('REDDIT_CLIENT_SECRET')
-    user_agent = os.getenv('REDDIT_USER_AGENT')
+    client_id = "2IhTJfbQfPiwvDSoou7lZw"  # os.getenv('REDDIT_CLIENT_ID')
+    client_secret = "nsU99R0sm5Wc_8LJXnT0mhh0seNK0g"  # os.getenv('REDDIT_CLIENT_SECRET')
+    user_agent = "test-backend"  # os.getenv('REDDIT_USER_AGENT')
     
     # Initialize Reddit instance
     reddit = praw.Reddit(
@@ -22,23 +22,33 @@ def get_reddit_posts(keyword, subreddit, limit):
         user_agent=user_agent
     )
     
-    # Search for posts with specific keywords
-    search_results = reddit.subreddit(subreddit).search(keyword, limit=limit)
-    
     combined_text = ""
     references = []
-    for post in search_results:
-        combined_text += f"Title: {post.title}\n"
-        combined_text += f"Text: {post.selftext}\n\n"
-        references.append({
-            "title": post.title,
-            "url": f"https://www.reddit.com{post.permalink}"
-        })
+    
+    # Search for subreddits related to the keyword
+    subreddits = reddit.subreddits.search(keyword, limit=limit)
+    
+    for subreddit in subreddits:
+        try:
+            # Search within each subreddit found
+            search_results = reddit.subreddit(subreddit.display_name).search(keyword, limit=limit)
+            
+            for post in search_results:
+                combined_text += f"Subreddit: {subreddit.display_name}\n"
+                combined_text += f"Title: {post.title}\n"
+                combined_text += f"Text: {post.selftext}\n\n"
+                references.append({
+                    "subreddit": subreddit.display_name,
+                    "title": post.title,
+                    "url": f"https://www.reddit.com{post.permalink}"
+                })
+        except Exception as ex:
+            continue
     
     return combined_text, references
 
-def generate_blog_post(api_key, prompt, keyword, references):
-    llm = ChatOpenAI(api_key=api_key)
+def generate_blog_post(prompt, keyword, references):
+    llm = ChatOpenAI(model_name="gpt-4o-mini")
     
     references_text = "\n".join([f"{i+1}. [{ref['title']}]({ref['url']})" for i, ref in enumerate(references)])
     
@@ -58,7 +68,7 @@ def generate_blog_post(api_key, prompt, keyword, references):
            - Provide context about the topic ({keyword}).
            - Briefly outline what the blog post will cover.
 
-        3. Main Body (3-5 sections):
+        3. Information (3-5 sections):
            - Organize the information from Reddit into coherent themes or subtopics.
            - For each section:
              * Use a clear subheading.
@@ -103,23 +113,21 @@ def main():
     st.title("Reddit-based Blog Post Generator")
     
     # User inputs
-    openai_key = st.text_input("Enter your OpenAI API key:", type="password")
     keyword = st.text_input("Enter the search keyword:")
-    subreddit = st.text_input("Enter the subreddit to search:", value="")
-    limit = st.slider("Number of Reddit posts to fetch:", min_value=1, max_value=50, value=10)
+    limit = st.slider("Number of Reddit posts to fetch:", min_value=1, max_value=50, value=3)
     
     if st.button("Generate Blog Post"):
-        if not openai_key or not keyword:
+        if not keyword:
             st.error("Please fill in all fields.")
         else:
             with st.spinner(f"Fetching {limit} Reddit posts..."):
-                combined_text, references = get_reddit_posts(keyword, subreddit, limit)
+                combined_text, references = get_reddit_posts(keyword, limit)
             
             st.subheader("Most Relevant Text from Reddit:")
             st.text_area("Reddit Content", combined_text, height=200)
             
             with st.spinner("Generating blog post..."):
-                blog_post = generate_blog_post(openai_key, combined_text, keyword, references)
+                blog_post = generate_blog_post(combined_text, keyword, references)
             
             st.subheader("Generated Blog Post:")
             st.markdown(blog_post)
