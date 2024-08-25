@@ -108,50 +108,68 @@ def generate_blog_post(prompt, keyword, references):
     prompt_template = PromptTemplate(
         input_variables=["content", "keyword", "references"],
         template="""
-        Craft an engaging and informative blog post on {keyword} using the following content from Reddit and Google search results:
+        Craft a compelling, SEO-optimized blog post on {keyword} using insights from Reddit discussions and authoritative web sources:
 
         {content}
 
-        Structure the blog post as follows:
+        Blog Post Structure:
 
-        1. Title: Create an attention-grabbing, SEO-friendly title that accurately represents the main topic.
+        1. Title: Create an attention-grabbing, keyword-rich title (60-70 characters).
 
         2. Introduction (100-150 words):
-        - Open with a compelling hook
-        - Provide context for {keyword}
-        - Outline the key points the post will cover
+        - Hook: Start with a surprising fact, question, or statistic
+        - Context: Briefly explain the importance of {keyword}
+        - Thesis: Clearly state the post's main argument or purpose
+        - Roadmap: Outline 3-5 key points to be covered
 
         3. Main Body (3-5 sections, 200-300 words each):
-        - Organize information into coherent themes or subtopics
+        - Use H2 headers for main sections, H3 for subsections
         - For each section:
-            * Use descriptive subheadings
-            * Present key ideas and insights
-            * Include relevant examples or anecdotes
-            * Ensure smooth transitions between sections
+            * Begin with a clear, informative subheading
+            * Present a key idea or argument
+            * Support with evidence from the provided content
+            * Include a relevant example, anecdote, or case study
+            * Conclude with a transition to the next section
 
-        4. Expert Analysis (150-200 words):
-        - Offer in-depth analysis of the topic
-        - Highlight trends, patterns, or conflicting viewpoints
+        4. Expert Insights (150-200 words):
+        - Analyze trends, patterns, or debates within the {keyword} topic
+        - Offer a unique perspective or synthesis of ideas
+        - Address any counterarguments or limitations
 
         5. Practical Applications (100-150 words):
-        - Provide actionable advice or insights for readers
+        - Provide 3-5 actionable tips or strategies for readers
+        - Explain how to implement these ideas in real-world scenarios
 
         6. Conclusion (100-150 words):
-        - Summarize key points
-        - End with a thought-provoking statement or call-to-action
+        - Recap the main points without introducing new information
+        - Emphasize the key takeaway or main argument
+        - End with a thought-provoking question or call-to-action
 
-        Writing Guidelines:
-        - Maintain a conversational yet informative tone
-        - Ensure logical flow and readability
-        - Use transitional phrases between paragraphs and sections
-        - Accurately represent main ideas without direct quotes or naming users
-        - Aim for a total word count of 1200-1500 words
+        Content Guidelines:
+        - Total word count: 1200-1500 words
+        - Tone: Conversational yet authoritative
+        - Use bullet points or numbered lists for easy readability
+        - Include 2-3 relevant statistics or data points
+        - Incorporate 1-2 analogies or metaphors to explain complex ideas
+        - Ensure proper keyword density (use {keyword} naturally throughout)
+        - Add internal links to 2-3 related topics (placeholder URLs are fine)
+
+        SEO Optimization:
+        - Include {keyword} in the title, first paragraph, and at least one H2 header
+        - Use related long-tail keywords throughout the content
+        - Optimize meta description (150-160 characters)
 
         7. References:
-        Include a "References" section at the end, listing sources as follows:
+        Include a "Sources" section at the end, formatted as follows:
         {references}
 
-        Ensure the final blog post is coherent, engaging, and valuable to readers interested in {keyword}.
+        Final Checks:
+        - Ensure coherence, logical flow, and engaging content
+        - Verify that the post provides unique value to readers interested in {keyword}
+        - Confirm all information is accurate and up-to-date
+        - Proofread for grammar, spelling, and punctuation
+
+        Generate the complete blog post following these guidelines, balancing depth of information with readability and SEO best practices.
         """
     )
     
